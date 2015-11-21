@@ -1,1 +1,2 @@
 # galdraAfgreidslumadur
+Spellchecker for Icelandic
