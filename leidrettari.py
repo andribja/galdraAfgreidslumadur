@@ -23,24 +23,39 @@ def correct(word, lastword):
     return max(candidates, key=lambda c: NWORDS[c]['prevWord'][lastword] if lastword in NWORDS[c]['prevWord'] else 0)
 
 name = raw_input().strip()
-correctDataList = []
+#correctDataList = []
+wordCounter = 0
+correctCounter = 0
+
+print name
 
 with open(name) as csvinput:
     csvData = csv.DictReader(csvinput)
     lastword = ""
-    for row in csvData:
-      correctData = {
-          'Word': csvData["Word"],
-          'Tag': csvData["Tag"],
-          'Lemma': csvData["Lemma"]
-      }
-      correctData["CorrectWord"] = correct(csvData["Word"], lastword)
-      correctDataList.append(correctData)
-      lastword = correctData["CorrectWord"]
+    with open('solution.csv', 'w') as sol:
+        fieldnames = ['Word', 'Tag', 'Lemma', 'CorrectWord']
+        writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
+        writer.writeheaders()
+        for row in csvData:
+            data = {
+                'Word': row["Word"],
+                'Tag': row["Tag"],
+                'Lemma': row["Lemma"]
+            }
+            data["CorrectWord"] = correct(row["Word"], lastword)
+            writer.writerow({'Word':data['Word'], 'Tag':data['Tag'], 'Lemma':data['Lemma'], 'CorrectWord':data['CorrectWord']})
+            #correctDataList.append(correctData)
+            lastword = data["CorrectWord"]
+            wordCounter += 1
+            if 'CorrectWord' in csvData and row['CorrectWord']==data['CorrectWord']:
+                correctCounter += 1
+            if wordCounter % 100 == 0:
+                print wordCounter, correctCounter, correctCounter/wordCounter
 
-with open('solution.csv', 'w') as sol:
-    fieldnames = ['Word', 'Tag', 'Lemma', 'CorrectWord']
-    writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
-    writer.writeheaders()
-    for data in correctDataList:
-        writer.writerow({'Word':data['Word'], 'Tag':data['Tag'], 'Lemma':data['Lemma'], 'CorrectWord':data['CorrectWord']})
+
+#with open('solution.csv', 'w') as sol:
+#    fieldnames = ['Word', 'Tag', 'Lemma', 'CorrectWord']
+#    writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
+#    writer.writeheaders()
+#    for data in correctDataList:
+#        writer.writerow({'Word':data['Word'], 'Tag':data['Tag'], 'Lemma':data['Lemma'], 'CorrectWord':data['CorrectWord']})
