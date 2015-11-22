@@ -30,9 +30,12 @@ def known_edits2(word):
 def known(words): return set(w for w in words if w in NWORDS)
 
 def correct(word, lemma, lastword):
-    candidates = known([word]) or known(edits1(word)) or known_edits2(word) or [word]
+    candidates = known([word]) or known(edits1(word)) or known_edits2(word)# or [word]
     keyfunc = lambda c: NWORDS[c]['prevWord'][lastword] if (lastword not in punctuations and lastword in NWORDS[c]['prevWord']) else 0
+    if len(candidates) <= 0:
+        return word    
     return max(candidates, key=keyfunc)
+
 
 name = raw_input().strip()
 #correctDataList = []
