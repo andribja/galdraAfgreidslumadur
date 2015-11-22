@@ -1,5 +1,6 @@
-import csv
-import json
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+import csv, json
 
 dataStuff = {}
 wordCount = 0;
@@ -13,30 +14,31 @@ for name in fileNameList:
 		lastword = ""
 		for row in reader:
 			currword = row['CorrectWord']
-			if currword not in dataStuff:
-				dataStuff[currword] = {
-					'count': 1,
-					'wrongSpelling': {},
-					'prevWord': {}
-				}
-				if currword != row['Word']:
-					ws = row['Word']
-					dataStuff[currword]['wrongSpelling'][ws] = 1
-				if lastword != "":
-					dataStuff[currword]['prevWord'][lastword] = 1
-			else:
-				dataStuff[currword]['count'] += 1
-				if currword != row['Word']:
-					ws = row['Word']
-					if ws not in dataStuff[currword]['wrongSpelling']:
+			if currword != "":
+				if currword not in dataStuff:
+					dataStuff[currword] = {
+						'count': 1,
+						'wrongSpelling': {},
+						'prevWord': {}
+					}
+					if currword != row['Word']:
+						ws = row['Word']
 						dataStuff[currword]['wrongSpelling'][ws] = 1
-					else:
-						dataStuff[currword]['wrongSpelling'][ws] += 1
-				if lastword != "":
-					if lastword not in dataStuff[currword]['prevWord']:
+					if lastword != "":
 						dataStuff[currword]['prevWord'][lastword] = 1
-					else:
-						dataStuff[currword]['prevWord'][lastword] += 1
+				else:
+					dataStuff[currword]['count'] += 1
+					if currword != row['Word']:
+						ws = row['Word']
+						if ws not in dataStuff[currword]['wrongSpelling']:
+							dataStuff[currword]['wrongSpelling'][ws] = 1
+						else:
+							dataStuff[currword]['wrongSpelling'][ws] += 1
+					if lastword != "":
+						if lastword not in dataStuff[currword]['prevWord']:
+							dataStuff[currword]['prevWord'][lastword] = 1
+						else:
+							dataStuff[currword]['prevWord'][lastword] += 1
 			lastword = currword
 			wordCount += 1
 			if wordCount % 100000 == 0:
