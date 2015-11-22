@@ -1,15 +1,11 @@
-import collections, re, csv
+import collections, re, csv, json
 
-stafrof = re.compile('[a-z\sáðéíótúýþæö]+', re.UNICODE)
+#stafrof = re.compile('[a-z\sáðéíótúýþæö]+', re.UNICODE)
 
-with open('althingi_errors/' + name + '.csv') as csvinput:
-    reader = csv.DictReader(csvinput)
-    for row in reader:
-        currword = row['CorrectWord']
+#def words(text): return stafrof.findall(text)
 
-def words(text): return stafrof.findall(text)
-
-NWORDS = train(words(file('big.txt').read()))
+NWORDS = json.load(open('oracle.json'))
+alphabet = 'aábcdðeéfghiíjklmnoópqrstuúvwxyýzþæö'
 
 def train(features):
     model = collections.defaultdict(lambda: 1)
@@ -25,4 +21,32 @@ def edits1(word):
    inserts    = [a + c + b     for a, b in splits for c in alphabet]
    return set(deletes + transposes + replaces + inserts)
 
+def known_edits2(word):
+    return set(e2 for e1 in edits1(word) for e2 in edits1(e1) if e2 in NWORDS)
 
+def known(words): return set(w for w in words if w in NWORDS)
+
+def correct(word):
+    candidates = known([word]) or known(edits1(word)) or known_edits2(word) or [word]
+    return max(candidates, key=NWORDS.get)
+
+name = raw_input().strip()
+correctDataList = []
+
+with open(name) as csvinput:
+    csvData = csv.DictReader(csvinput)
+    for row in csvData:
+      correctData = {
+          'Word': csvData["Word"],
+          'Tag': csvData["Tag"],
+          'Lemma': csvData["Lemma"]
+      }
+      correctData["CorrectWord"] = correct(csvData["Word"])
+      correctDataList.append(correctData)
+
+with open('solution.csv', 'w') as sol:
+    fieldnames = ['Word', 'Tag', 'Lemma', 'CorrectWord']
+    writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
+    writer.writeheaders()
+    for data in correctDataList:
+        writer.writerow({'Word':data['Word'], 'Tag':data['Tag'], 'Lemma':data['Lemma'], 'CorrectWord':data['CorrectWord']})
