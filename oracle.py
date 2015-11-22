@@ -33,7 +33,6 @@ for name in fileNameList:
 					else:
 						dataStuff[currword]['wrongSpelling'][ws] += 1
 				if lastword != "":
-					dataStuff[currword]['prevWord'][lastword] = 1
 					if lastword not in dataStuff[currword]['prevWord']:
 						dataStuff[currword]['prevWord'][lastword] = 1
 					else:
