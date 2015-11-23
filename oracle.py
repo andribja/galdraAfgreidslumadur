@@ -1,5 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
+
+# Oracle
 import csv, json
 
 dataStuff = {}
@@ -15,8 +17,8 @@ for name in fileNameList:
 		for row in reader:
 			currword = row['CorrectWord']
 			if currword != "":
-				if currword not in dataStuff:
-					dataStuff[currword] = {
+				if currword not in dataStuff: #if word is missing from current data
+					dataStuff[currword] = { #log attributes of word
 						'count': 1,
 						'wrongSpelling': {},
 						'prevWord': {}
@@ -26,7 +28,7 @@ for name in fileNameList:
 						dataStuff[currword]['wrongSpelling'][ws] = 1
 					if lastword != "":
 						dataStuff[currword]['prevWord'][lastword] = 1
-				else:
+				else: #if word is found in current data
 					dataStuff[currword]['count'] += 1
 					if currword != row['Word']:
 						ws = row['Word']
@@ -44,5 +46,5 @@ for name in fileNameList:
 			if wordCount % 100000 == 0:
 				print wordCount, lastword, name
 
-with open('oracle.json', 'w+') as doc:
+with open('oracle.json', 'w+') as doc: #export json
 	json.dump(dataStuff, doc)

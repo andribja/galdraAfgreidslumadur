@@ -13,7 +13,8 @@ def byteify(input):
         return input
 
 NWORDS = byteify(json.load(open('oracle.json')))
-alphabet = ['a','á','b','c','d','ð','e','é','f','g','h','i','í','j','k','l','m','n','o','ó','p','q','r','s','t','u','ú','v','w','x','y','ý','z','þ','æ','ö']#print alphabet
+alphabet = ['a','á','b','c','d','ð','e','é','f','g','h','i','í','j','k','l','m','n','o','ó','p','q','r','s','t','u','ú','v','w','x','y','ý','z','þ','æ','ö']
+print alphabet
 punctuations = '., '
 #Check whether deleting, transposing, replacing or inserting gives a better result
 def edits1(word):
@@ -53,7 +54,7 @@ with open(name) as csvinput:
     reader = csv.DictReader(csvinput)
     lastword = ""
     #open output csv, create if not exists
-    with open('solution'+name.replace('althingi_errors/',''), 'w+') as sol:
+    with open('solution.csv','w+') as sol:
         fieldnames = ['Word', 'Tag', 'Lemma', 'CorrectWord']
         writer = csv.DictWriter(sol, fieldnames=fieldnames)
         writer.writeheader()
