@@ -13,7 +13,8 @@ def byteify(input):
         return input
 
 NWORDS = byteify(json.load(open('oracle.json')))
-alphabet = 'aábcdðeéfghiíjklmnoópqrstuúvwxyýzþæö'
+alphabet = ['a','á','b','c','d','ð','e','é','f','g','h','i','í','j','k','l','m','n','o','ó','p','q','r','s','t','u','ú','v','w','x','y','ý','z','þ','æ','ö']
+#print alphabet
 punctuations = '., '
 
 def edits1(word):
@@ -22,7 +23,11 @@ def edits1(word):
    transposes = [a + b[1] + b[0] + b[2:] for a, b in splits if len(b)>1]
    replaces   = [a + c + b[1:] for a, b in splits for c in alphabet if b]
    inserts    = [a + c + b     for a, b in splits for c in alphabet]
-   return set(deletes + transposes + replaces + inserts)
+   if len(word) <= 2:
+       singletons = [c for c in alphabet]
+   else:
+       singletons = []
+   return set(deletes + transposes + replaces + inserts + singletons)
 
 def known_edits2(word):
     return set(e2 for e1 in edits1(word) for e2 in edits1(e1) if e2 in NWORDS)
@@ -33,7 +38,7 @@ def correct(word, lemma, lastword):
     candidates = known([word]) or known(edits1(word)) or known_edits2(word)# or [word]
     keyfunc = lambda c: NWORDS[c]['prevWord'][lastword] if (lastword not in punctuations and lastword in NWORDS[c]['prevWord']) else 0
     if len(candidates) <= 0:
-        return word    
+        return word
     return max(candidates, key=keyfunc)
 
 
@@ -41,13 +46,14 @@ name = raw_input().strip()
 #correctDataList = []
 wordCounter = 0
 correctCounter = 0
+correctBeforeCtr = 0
 
 print name
 
 with open(name) as csvinput:
     reader = csv.DictReader(csvinput)
     lastword = ""
-    with open('solution.csv', 'w') as sol:
+    with open('solution'+name.replace('althingi_errors/',''), 'w+') as sol:
         fieldnames = ['Word', 'Tag', 'Lemma', 'CorrectWord']
         writer = csv.DictWriter(sol, fieldnames=fieldnames)
         writer.writeheader()
@@ -64,8 +70,10 @@ with open(name) as csvinput:
             wordCounter += 1
             if 'CorrectWord' in row and row['CorrectWord']==data['CorrectWord']:
                 correctCounter += 1
+            if 'CorrectWord' in row and row['CorrectWord']==row['Word']:
+                correctBeforeCtr += 1
             if wordCounter % 100 == 0:
-                print wordCounter, correctCounter, 100*correctCounter/wordCounter
+                print wordCounter, correctCounter, 100*correctCounter/float(wordCounter), 100*correctBeforeCtr/float(wordCounter)
 
 
 #with open('solution.csv', 'w') as sol:

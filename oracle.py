@@ -44,5 +44,5 @@ for name in fileNameList:
 			if wordCount % 100000 == 0:
 				print wordCount, lastword, name
 
-with open('oracle.json', 'w') as doc:
+with open('oracle.json', 'w+') as doc:
 	json.dump(dataStuff, doc)
